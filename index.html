@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body onload="Start()">
+    <h1>
+        Hangman Game - With Canvas
+    </h1>
+    <p>
+        Try to find out what is the word you partner has secretely wrote.
+    </p>
+
+    <article>
+        <header>
+            <h2>Player 1</h2>
+            <p>Here you must input the secret word to your partner</p>
+        </header>
+
+        <section class="playerSection">
+            <div class="secretWordContainer">
+                <label for="txtSecretWordInput">Secret Word: </label>
+                <input id="txtSecretWordInput" type="text">
+            </div>
+
+            <div class="tipContainer">
+                <p>Wanna give a tip? Select over here if its an animal, person or whatever</p>
+                <p>Yes, you can wrongly select an option, you <span>evil</span></p>
+
+                <form class="radioOptions">
+                    <label for="radioAnimal">Animal</label>
+                    <input id="radioAnimal" name="tip" type="radio">
+
+                    <label for="radioFood">Food</label>
+                    <input id="radioFood" name="tip" type="radio">
+
+                    <label for="radioPlace">Place</label>
+                    <input id="radioPlace" name="tip" type="radio">
+
+                    <label for="radioObject">Object</label>
+                    <input id="radioObject" name="tip" type="radio">
+
+                    <label for="radioNone">None</label>
+                    <input id="radioNone" name="tip" type="radio">
+
+                    <label for="radioOther">Other?</label>
+                    <input id="radioOther" name="tip" type="radio">
+                    <input id="inputTip" type="text" pattern="[A-Za-z]" placeholder="Only letters accepted" >
+
+                    <input id="btnFinishSecretWord" type="submit" value="All done!">
+                </form>
+
+                
+            </div>
+        </section>
+
+        <section class="playerSection">
+            <header>
+                <h2>Player 2</h2>
+                <p>Try to guess the word before you run out of chances!!!</p>
+            </header>
+
+            <div>
+                <h3>Round <span id="roundNumber">X</span></h3>
+
+                <p>Secret Word - <span id="txtSecretWord"></span></p>
+                <p>Chances Left - <span id="chancesLeft"></span></p>
+
+                <canvas id="canvas" width="500" height="300"></canvas>
+                
+                <label for="inputPlayer2">Your Prompt</label>
+                <input id="inputPlayer2" type="text" maxlength="1">
+                <button id="btnGuess">Guess...</button>
+
+                <h3>Letters already written</h3>
+                <p id="txtLettersAlreadyTyped">-temp-</p>
+            </div>
+        </section>
+
+
+    </article>
+
+
+    <script src="main.js"></script>
+</body>
+
+</html>

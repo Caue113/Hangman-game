@@ -1,0 +1,18 @@
+canvas{
+    display: block;
+    border: 3px dashed black;
+}
+
+.radioOptions{
+    display: flex;
+    flex-direction: column;
+}
+
+.radioOptions label{
+    display: inline-block;
+    background-color: aqua;
+}
+
+.radioOptions input{
+    display: inline-block;
+}
