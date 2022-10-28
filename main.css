@@ -16,3 +16,8 @@ canvas{
 .radioOptions input{
     display: inline-block;
 }
+
+#txtSecretWord{
+    font-size: 3rem;
+    color: #42d0e9;
+}

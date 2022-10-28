@@ -8,13 +8,20 @@
  * 
  */
 
+
+/**
+ * A word class to be storaged in database.
+ */
 class Word {
+    /**@type {string} The word itself */
     word;
+    /**@type {string} The theme/genre of the word */
     type;
 
     constructor(word, type){
         this.word = word;
-        this.type = type;
+
+        type != null ? this.type = type : this.type = "No type specified";
     }
     
 }
@@ -141,7 +148,12 @@ function Start() {
 
     //The machine selects a random word
     secretWord = selectRandomSecretWord();
+    dummySecretWord = HideWord(secretWord.word);
 
+    UpdateAllUI();
+
+
+    
     btnGuess.addEventListener("click", ()=>{GuessTheLetter(inputPlayer2.value)});
 }
 
@@ -156,6 +168,8 @@ function GuessTheLetter(letter)
     console.log("flux start: ", letter);
     letter = letter.toLowerCase();
 
+
+    //"If guard" zone. Must clean later
     if(!isCharacterValid(letter))
     {
         console.log("invalid input");
@@ -166,32 +180,46 @@ function GuessTheLetter(letter)
     if(typedLetters.includes(letter))
     {
         console.log("Already typed letter!");
+        return;
     }
     else
     {
-        typedLetters.push(letter);
         console.log("Added: ", letter);
+
+        typedLetters.push(letter);
+        UpdateTypedLetters();
     }
     
+
+    BuildDummyWord();
+
     
+
+
     //Sucess and Mistake
-    if(secretWord.contains(letter))
+    if(hasPlayerFoundALetter(letter))
     {
         console.log("Hooray, you got a letter!");
-        //Update dummy secret word
-        //Update interface (letters already written, )
-        //Update 
+        
     }
     else
     {
         console.log("Ooh shoot. That wasn't in the secret word");
         playerLifes--;
+        //stickState++;
     }
-    
+
+    //I suppose that all validations are right so we can go 1 round independently
     currentRoundNumber++;
+    
     
 
     
+
+
+
+
+    UpdateAllUI();
 }
 
 /**
@@ -218,18 +246,103 @@ function isCharacterValid(character, filter = /[a-z]/)
     return isValid;    
 }
 
-function UpdateInterface()
+/**
+ * Visually updates all fields in screen interface
+ */
+function UpdateAllUI()
 {
     UpdateCurrentRound();
-    UpdateDummySecretWord();
     UpdateChancesLeft();
+    UpdateTypedLetters();
+    UpdateDummySecretWord();
 
+    //UpdateHangman();
 }
 
 function UpdateCurrentRound()
 {
     roundNumber.innerText = currentRoundNumber.toString();
 }
+
+function UpdateChancesLeft()
+{
+    txtChancesLeft.innerText = playerLifes.toString();
+}
+
+function UpdateTypedLetters()
+{
+    let tempStr = "";
+
+    //Método O(n) para atualizar texto. Utilize string.append() para tornar um O(1).
+    typedLetters.forEach(letter => {
+        tempStr += letter;
+    });
+
+    txtLettersAlreadyTyped.innerText = tempStr;
+
+}
+
+function UpdateDummySecretWord()
+{
+    
+
+    txtSecretWord.innerText = dummySecretWord.toString();
+}
+
+/**
+ * 
+ * @param {String} word The string you want to hide 
+ * @param {String} symbol A single character to substitue the entire string as that symbol
+ * @returns a string with same length replaced with 'Symbol'
+ */
+function HideWord(word, symbol = '#')
+{
+    let encryptedWord = "";
+
+    word.split("").forEach(() =>{
+        encryptedWord += symbol;
+    })
+    return encryptedWord;
+}
+
+/**
+ * Updates the dummy word to either reveal new characters or keep the hidden ones
+ */
+function BuildDummyWord()
+{
+    let typedChar = inputPlayer2.value;
+    
+    let buildStr = "";
+    
+    //Build string to replace dummy with original
+    for (let i = 0; i < secretWord.word.length; i++) {
+        let char = secretWord.word.toLowerCase().charAt(i);
+    
+        if(typedChar == char)
+            buildStr += secretWord.word.substring(i, i + 1);
+        else
+            buildStr += dummySecretWord.substring(i, i + 1);
+        
+        console.log("buildStr: ", buildStr);
+    }
+
+    dummySecretWord = buildStr;  
+}
+
+/**
+ * Checks if the player's input match a character from the secret word
+ * @param {string} inputLetter The player 2 input. 
+ * @returns true or true
+ */
+function hasPlayerFoundALetter(inputLetter)
+{
+    if(secretWord.word.toLowerCase().includes(inputLetter))
+        return true;
+    else
+        return false;
+}
+
+
 
 /*
 

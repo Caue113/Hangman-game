@@ -19,12 +19,13 @@
     </p>
 
     <article>
-        <header>
-            <h2>Player 1</h2>
-            <p>Here you must input the secret word to your partner</p>
-        </header>
+        <!-- Player 1 Zone-->
+        <section class="playerSection" style="display: none">
+            <header>
+                <h2>Player 1</h2>
+                <p>Here you must input the secret word to your partner</p>
+            </header>
 
-        <section class="playerSection">
             <div class="secretWordContainer">
                 <label for="txtSecretWordInput">Secret Word: </label>
                 <input id="txtSecretWordInput" type="text">
@@ -61,6 +62,8 @@
             </div>
         </section>
 
+        <!-- Player 2 Zone-->
+
         <section class="playerSection">
             <header>
                 <h2>Player 2</h2>
@@ -71,7 +74,7 @@
                 <h3>Round <span id="roundNumber">X</span></h3>
 
                 <p>Secret Word - <span id="txtSecretWord"></span></p>
-                <p>Chances Left - <span id="chancesLeft"></span></p>
+                <p>Chances Left - <span id="txtChancesLeft"></span></p>
 
                 <canvas id="canvas" width="500" height="300"></canvas>
                 
