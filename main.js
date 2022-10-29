@@ -1,16 +1,14 @@
 /**
  *  TO-DO
- *      Finish Game logic;
- *      Finish Interface Updates;
- *      Create Visuals with Canvas;
- *      Implement Player 1 Mechanics and option to choose;
+ *      Implement Player 1 Mechanics and an option to choose or create a new word;
+ *      Create visual responses to player's inputs and validations;
  *      Reorganize javascript files; 
- * 
- */
+ *      Style (it really needs some style)
+*/
 
 
 /**
- * A word class to be storaged in database.
+ * A word class to be stored in database.
  */
 class Word {
     /**@type {string} The word itself */
@@ -30,8 +28,10 @@ class Word {
 let roundNumber = document.getElementById("roundNumber");
 
 let txtSecretWord = document.getElementById("txtSecretWord");
+let txtSecretWordType = document.getElementById("txtSecretWordType");
 let txtChancesLeft = document.getElementById("txtChancesLeft");
 let txtLettersAlreadyTyped = document.getElementById("txtLettersAlreadyTyped");
+
 
 let inputPlayer2 = document.getElementById("inputPlayer2");
 let btnGuess = document.getElementById("btnGuess");
@@ -46,6 +46,10 @@ let playerLifes = 6;
  * @type {number} The current number of the round.
  */
 let currentRoundNumber = 1;
+/**
+ *  @type {number} The current state of stick buddy. In this system, the max number is 5 different limbs to our stick buddy.
+ */
+let currentStickBuddyState = 0;
 /**
  * @type {string} The player input letter
  */
@@ -112,7 +116,7 @@ let words = [
 ];
 
 /**
- * @type {Array<States>}
+ * @type {Array<Object>}
  * An array containing canvas path drawings of the stick buddy. Each index represents
  * a different limb
  * 
@@ -122,12 +126,107 @@ let words = [
         1:
         {
             "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+            
+                ctx.arc(300, 100, 25, 0, 2 * Math.PI, true);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
+            }
+        },
+        2:
+        {
+            "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                
+                ctx.moveTo(300, 125);
+                ctx.lineTo(300,225);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
+            }
+        },
+        3:
+        {
+            "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                
+                ctx.moveTo(300, 225);
+                ctx.lineTo(275,275);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
+            }
+        },
+        4:
+        {
+            "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                
+                ctx.moveTo(300, 225);
+                ctx.lineTo(325,275);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
+            }
+        },
+        5:
+        {
+            "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                
+                ctx.moveTo(300, 140);
+                ctx.lineTo(275,175);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
+            }
+        },
+        6:
+        {
+            "draw": () => {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                
+                ctx.moveTo(300, 140);
+                ctx.lineTo(325, 175);
+                
+                ctx.stroke();
+                ctx.closePath();
+                console.log("i painted")
             }
         }
     }
 ];
 
 
+/**
+ * @type {Enumerator} Represent a body part of Stick Buddy with his indexed value. Can be edited to developer's preferred order of drawing the Stick Buddy or add more body parts if wanted. 
+ */
+let stickBuddyLimbsEnum = {
+    "Head" : 1,
+    "Body" : 2,
+    "Leg_L": 3,
+    "Leg_R": 4,
+    "Arm_L": 5,
+    "Arm_R": 6
+}
 
 
 
@@ -149,22 +248,20 @@ function Start() {
     //The machine selects a random word
     secretWord = selectRandomSecretWord();
     dummySecretWord = HideWord(secretWord.word);
-
-    UpdateAllUI();
-
-
     
     btnGuess.addEventListener("click", ()=>{GuessTheLetter(inputPlayer2.value)});
+
+    DrawHang();
+
+    //drawBuddy();
+    UpdateAllUI();
 }
 
 /**
  * @param {string} letter The typed letter by player 2
  */
 function GuessTheLetter(letter)
-{
-    //Get input
-    //Validate input
-    
+{    
     console.log("flux start: ", letter);
     letter = letter.toLowerCase();
 
@@ -193,31 +290,24 @@ function GuessTheLetter(letter)
 
     BuildDummyWord();
 
-    
-
 
     //Sucess and Mistake
     if(hasPlayerFoundALetter(letter))
     {
-        console.log("Hooray, you got a letter!");
-        
+        console.log("Hooray, you got a letter!");        
     }
     else
     {
         console.log("Ooh shoot. That wasn't in the secret word");
         playerLifes--;
-        //stickState++;
+        currentStickBuddyState++;
+        DrawStickBuddyLimb();
     }
 
     //I suppose that all validations are right so we can go 1 round independently
     currentRoundNumber++;
     
-    
-
-    
-
-
-
+    CheckPlayerConditions();
 
     UpdateAllUI();
 }
@@ -228,9 +318,9 @@ function GuessTheLetter(letter)
  */
 function selectRandomSecretWord()
 {
-    //Script to get random integers by W3Schools. Slightly edited
-    let rng = Math.floor(Math.random() * (words.length - 0 + 1) ) + 0;
-
+    //Rng gets length exclusive (length - 1)
+    let rng = Math.floor(Math.random() * words.length);
+    
     return words[rng];
 }
 
@@ -251,12 +341,13 @@ function isCharacterValid(character, filter = /[a-z]/)
  */
 function UpdateAllUI()
 {
+    //Interface Related
+
     UpdateCurrentRound();
     UpdateChancesLeft();
     UpdateTypedLetters();
     UpdateDummySecretWord();
-
-    //UpdateHangman();
+    UpdateSecretWordType();
 }
 
 function UpdateCurrentRound()
@@ -284,9 +375,11 @@ function UpdateTypedLetters()
 
 function UpdateDummySecretWord()
 {
-    
-
     txtSecretWord.innerText = dummySecretWord.toString();
+}
+
+function UpdateSecretWordType(){
+    txtSecretWordType.innerText = secretWord.type;
 }
 
 /**
@@ -299,8 +392,9 @@ function HideWord(word, symbol = '#')
 {
     let encryptedWord = "";
 
-    word.split("").forEach(() =>{
-        encryptedWord += symbol;
+    word.split("").forEach((char) =>{
+        char == " " ? encryptedWord += " " : encryptedWord += symbol;
+        //encryptedWord += symbol;
     })
     return encryptedWord;
 }
@@ -342,7 +436,53 @@ function hasPlayerFoundALetter(inputLetter)
         return false;
 }
 
+/**
+ * Prompts a message/interface of the current state conditions of player.
+ */
+function CheckPlayerConditions()
+{    
+    if(hasPlayerWon())
+    {
+        alert("Congrats! You have won the game, Player 1 :]");
+    }
 
+    if(hasPlayerLose())
+    {
+        alert("Ooh shoot, you have lost, Player 2 :[");
+    }
+
+}
+/**
+ * Checks if player has guessed all the letters
+ * @returns True if guessed / False if hasn't guessed yet
+ */
+function hasPlayerWon()
+{
+    if(secretWord.word === dummySecretWord)
+    {
+        return true;
+    }
+    else
+    {
+        return false;        
+    }
+}
+
+/**
+ * Checks if the player has meet conditions to indicate a lose.
+ * @returns TRUE if player doesn't have any lifes / FALSE if there still lifes left
+ */
+function hasPlayerLose()
+{
+    if(playerLifes <= 0){
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
 
 /*
 
@@ -364,12 +504,41 @@ function DrawFlag(flag) {
 
 */
 
+/**
+ * Draws a specific limb of the Stick Buddy. If no indexLimb is provided, the function uses 'currentStickBuddyState' as argument
+ * @param {number} indexLimb The index of a body part from Stick Buddy. Also accepts -> stickBuddyLimbsEnum.'limb' or stickBuddyLimbsEnum[limb]
+ */
+function DrawStickBuddyLimb(indexLimb = currentStickBuddyState)
+{
+    stickBuddyStates[0][indexLimb].draw();
+}
+
+function DrawHang()
+{
+    ctx.beginPath();
+
+    //Wooden Structure
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 5;
+
+    ctx.moveTo(200, canvasHTML.height);
+    ctx.lineTo(200, 25);
+    ctx.lineTo(300, 25);
+    ctx.lineTo(300, 50);
+    ctx.stroke();
+    
+    //Rope
+    ctx.lineWidth = 3;
+    ctx.lineTo(300,75)
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
 function ClearCanvas() {
     ctx.clearRect(0, 0, canvasHTML.width, canvasHTML.height);
 }
-
-
-
 
 
 
