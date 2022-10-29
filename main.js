@@ -1,13 +1,15 @@
 /**
  *  TO-DO
- *      Implement Player 1 Mechanics and an option to choose or create a new word;
- *      Create visual responses to player's inputs and validations;
+ *      Finish Game logic;
+ *      Finish Interface Updates;
+ *      Create Visuals with Canvas;
+ *      Implement Player 1 Mechanics and option to choose;
  *      Reorganize javascript files; 
- *      Style (it really needs some style)
-*/
+ * 
+ */
 
 /**
- * A word class to be stored in database.
+ * A word class to be storaged in database.
  */
 class Word {
     /**@type {string} The word itself */
