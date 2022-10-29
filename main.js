@@ -6,7 +6,6 @@
  *      Style (it really needs some style)
 */
 
-
 /**
  * A word class to be stored in database.
  */
@@ -119,7 +118,6 @@ let words = [
  * @type {Array<Object>}
  * An array containing canvas path drawings of the stick buddy. Each index represents
  * a different limb
- * 
  */
  let stickBuddyStates = [
     {
@@ -483,26 +481,6 @@ function hasPlayerLose()
     }
 
 }
-
-/*
-
-@param {string} flag
-
-function DrawFlag(flag) {
-    //Clear canvas for next flag
-    ClearCanvas();
-
-    flag = flag.toUpperCase();
-
-    for (let i = 0; i < flagDrawPaths.length; i++) {
-        if (flagDrawPaths[i][flag] != undefined) {
-            console.log("Desenhando bandeira: ", flag)
-            flagDrawPaths[i][flag].draw();
-        }
-    }
-}
-
-*/
 
 /**
  * Draws a specific limb of the Stick Buddy. If no indexLimb is provided, the function uses 'currentStickBuddyState' as argument
